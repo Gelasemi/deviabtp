@@ -1,21 +1,43 @@
+import json
+import pandas as pd
 
-import os
-import base64
-import streamlit as st
+def load_materials(file_path="data/materials.json"):
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            materials = json.load(f)
+        return materials
+    except FileNotFoundError:
+        return {}
 
-def save_uploaded_file(uploaded_file, folder="uploaded_docs"):
-    if not os.path.exists(folder):
-        os.makedirs(folder)
-    file_path = os.path.join(folder, uploaded_file.name)
-    with open(file_path, "wb") as f:
-        f.write(uploaded_file.getbuffer())
-    return file_path
+def save_materials(materials, file_path="data/materials.json"):
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(materials, f, indent=4, ensure_ascii=False)
 
-def get_base64_of_bin_file(bin_file):
-    with open(bin_file, 'rb') as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
+def calculate_total(materials):
+    total = 0
+    for item in materials.values():
+        try:
+            total += item.get("quantite", 0) * item.get("prix_unitaire", 0)
+        except TypeError:
+            continue
+    return total
 
-def get_download_link(file_path, label='Télécharger le fichier'):
-    b64 = get_base64_of_bin_file(file_path)
-    return f'<a href="data:application/octet-stream;base64,{b64}" download="{os.path.basename(file_path)}">{label}</a>'
+def materials_to_dataframe(materials):
+    rows = []
+    for key, data in materials.items():
+        row = {
+            "Nom": key,
+            "Quantité": data.get("quantite", 0),
+            "Prix Unitaire (Ar)": data.get("prix_unitaire", 0),
+            "Total (Ar)": data.get("quantite", 0) * data.get("prix_unitaire", 0)
+        }
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+def export_to_excel(materials, filename="devis_export.xlsx"):
+    df = materials_to_dataframe(materials)
+    df.to_excel(filename, index=False)
+
+def export_to_csv(materials, filename="devis_export.csv"):
+    df = materials_to_dataframe(materials)
+    df.to_csv(filename, index=False, encoding="utf-8-sig")
