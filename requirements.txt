@@ -1,6 +1,0 @@
-streamlit
-plotly
-pandas
-fpdf
-num2words
-pillow
