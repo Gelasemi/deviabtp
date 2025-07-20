@@ -1,5 +1,6 @@
 streamlit
 fpdf
-Pillow
-matplotlib
 num2words
+pillow
+matplotlib
+plotly
