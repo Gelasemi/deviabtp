@@ -12,7 +12,7 @@ lang = st.selectbox("🌐 Select Language / Fidio fiteny / Choisissez la langue"
 T = translations[lang]
 
 # --- Logo ---
-st.image("Mialy&G.png", width=120)
+st.image("mialyg.png", width=120)
 
 # --- Titre ---
 st.title(f"📐 {T['title']} – DEVIABTP")
